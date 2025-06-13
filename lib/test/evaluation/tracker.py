@@ -181,7 +181,7 @@ class Tracker:
 
         return output
 
-    def run_video(self, videofilepath, optional_box=None, debug=None, visdom_info=None, save_results=False):
+    def run_video(self, videofilepath_v, videofilepath_i, optional_box=None, debug=None, visdom_info=None, save_results=False):
         """Run the tracker with the vieofile.
         args:
             debug: Debug level.
@@ -208,23 +208,33 @@ class Tracker:
         else:
             raise ValueError('Unknown multi object mode {}'.format(multiobj_mode))
 
-        assert os.path.isfile(videofilepath), "Invalid param {}".format(videofilepath)
+        assert os.path.isfile(videofilepath_v), "Invalid param {}".format(videofilepath_v)
         ", videofilepath must be a valid videofile"
 
         output_boxes = []
 
-        cap = cv.VideoCapture(videofilepath)
-        display_name = 'Display: ' + tracker.params.tracker_name
-        cv.namedWindow(display_name, cv.WINDOW_NORMAL | cv.WINDOW_KEEPRATIO)
-        cv.resizeWindow(display_name, 960, 720)
-        success, frame = cap.read()
-        cv.imshow(display_name, frame)
+        cap_v = cv.VideoCapture(videofilepath_v)
+        cap_i = cv.VideoCapture(videofilepath_i)
+        display_name_v = 'RGB Display: ' + tracker.params.tracker_name
+        display_name_i = 'TIR Display: ' + tracker.params.tracker_name
+        cv.namedWindow(display_name_v, cv.WINDOW_NORMAL | cv.WINDOW_KEEPRATIO)
+        cv.namedWindow(display_name_i, cv.WINDOW_NORMAL | cv.WINDOW_KEEPRATIO)
+        cv.resizeWindow(display_name_v, 960, 720)
+        cv.resizeWindow(display_name_i, 960, 720)
+        success, frame_v = cap_v.read()  # (720, 1280, 3)
+        success, frame_i = cap_i.read()
+        cv.imshow(display_name_v, frame_v)
+        cv.imshow(display_name_i, frame_i)
+
+        frame = np.concatenate([frame_v, frame_i], 2)
+
+        idx = 0
 
         def _build_init_info(box):
             return {'init_bbox': box}
 
         if success is not True:
-            print("Read frame from {} failed.".format(videofilepath))
+            print("Read frame from {} failed.".format(videofilepath_v))
             exit(-1)
         if optional_box is not None:
             assert isinstance(optional_box, (list, tuple))
@@ -234,73 +244,94 @@ class Tracker:
         else:
             while True:
                 # cv.waitKey()
-                frame_disp = frame.copy()
+                frame_disp = frame[:,:,:3].copy()  # 取出可见光的
 
                 cv.putText(frame_disp, 'Select target ROI and press ENTER', (20, 30), cv.FONT_HERSHEY_COMPLEX_SMALL,
                            1.5, (0, 0, 0), 1)
 
-                x, y, w, h = cv.selectROI(display_name, frame_disp, fromCenter=False)
+                x, y, w, h = cv.selectROI(display_name_v, frame_disp, fromCenter=False)
                 init_state = [x, y, w, h]
                 tracker.initialize(frame, _build_init_info(init_state))
                 output_boxes.append(init_state)
                 break
 
         while True:
-            ret, frame = cap.read()
+            ret, frame_v = cap_v.read()
+            ret, frame_i = cap_i.read()
 
-            if frame is None:
+            if frame_v is None:
                 break
 
-            frame_disp = frame.copy()
+            frame = np.concatenate([frame_v, frame_i], 2)
+
+            frame_disp_v = frame[:,:,:3].copy()
+            frame_disp_i = frame[:,:,3:].copy()
 
             # Draw box
             out = tracker.track(frame)
             state = [int(s) for s in out['target_bbox']]
             output_boxes.append(state)
 
-            cv.rectangle(frame_disp, (state[0], state[1]), (state[2] + state[0], state[3] + state[1]),
+            cv.rectangle(frame_disp_v, (state[0], state[1]), (state[2] + state[0], state[3] + state[1]),
                          (0, 255, 0), 5)
 
             font_color = (0, 0, 0)
-            cv.putText(frame_disp, 'Tracking!', (20, 30), cv.FONT_HERSHEY_COMPLEX_SMALL, 1,
+            cv.putText(frame_disp_v, 'Tracking!', (20, 30), cv.FONT_HERSHEY_COMPLEX_SMALL, 1,
                        font_color, 1)
-            cv.putText(frame_disp, 'Press r to reset', (20, 55), cv.FONT_HERSHEY_COMPLEX_SMALL, 1,
+            cv.putText(frame_disp_v, 'Press r to reset', (20, 55), cv.FONT_HERSHEY_COMPLEX_SMALL, 1,
                        font_color, 1)
-            cv.putText(frame_disp, 'Press q to quit', (20, 80), cv.FONT_HERSHEY_COMPLEX_SMALL, 1,
+            cv.putText(frame_disp_v, 'Press q to quit', (20, 80), cv.FONT_HERSHEY_COMPLEX_SMALL, 1,
                        font_color, 1)
 
             # Display the resulting frame
-            cv.imshow(display_name, frame_disp)
+            cv.imshow(display_name_v, frame_disp_v)
+            cv.imwrite('/home/xyl/newdrive/xyl-code2/0.my_trackers/FMTrack/output/vis/RGB/{:06d}.jpg'.format(idx), frame_disp_v)  # xyl result 20210424 start from 2 ,six int
+
+            cv.rectangle(frame_disp_i, (state[0], state[1]), (state[2] + state[0], state[3] + state[1]),
+                         (0, 255, 0), 5)
+            font_color = (0, 0, 0)
+            cv.putText(frame_disp_i, 'Tracking!', (20, 30), cv.FONT_HERSHEY_COMPLEX_SMALL, 1,
+                       font_color, 1)
+            cv.putText(frame_disp_i, 'Press r to reset', (20, 55), cv.FONT_HERSHEY_COMPLEX_SMALL, 1,
+                       font_color, 1)
+            cv.putText(frame_disp_i, 'Press q to quit', (20, 80), cv.FONT_HERSHEY_COMPLEX_SMALL, 1,
+                       font_color, 1)
+
+            # Display the resulting frame
+            cv.imshow(display_name_i, frame_disp_i)
+            cv.imwrite('/home/xyl/newdrive/xyl-code2/0.my_trackers/FMTrack/output/vis/TIR/{:06d}.jpg'.format(idx), frame_disp_i)  # xyl result 20210424 start from 2 ,six int
+            idx = idx + 1
+
             key = cv.waitKey(1)
             if key == ord('q'):
                 break
             elif key == ord('r'):
-                ret, frame = cap.read()
+                ret, frame = cap_v.read()
                 frame_disp = frame.copy()
 
                 cv.putText(frame_disp, 'Select target ROI and press ENTER', (20, 30), cv.FONT_HERSHEY_COMPLEX_SMALL, 1.5,
                            (0, 0, 0), 1)
 
-                cv.imshow(display_name, frame_disp)
-                x, y, w, h = cv.selectROI(display_name, frame_disp, fromCenter=False)
+                cv.imshow(display_name_v, frame_disp)
+                x, y, w, h = cv.selectROI(display_name_v, frame_disp, fromCenter=False)
                 init_state = [x, y, w, h]
                 tracker.initialize(frame, _build_init_info(init_state))
                 output_boxes.append(init_state)
 
         # When everything done, release the capture
-        cap.release()
+        cap_v.release()
+        cap_i.release()
         cv.destroyAllWindows()
 
         if save_results:
             if not os.path.exists(self.results_dir):
                 os.makedirs(self.results_dir)
-            video_name = Path(videofilepath).stem
+            video_name = Path(videofilepath_v).stem
             base_results_path = os.path.join(self.results_dir, 'video_{}'.format(video_name))
 
             tracked_bb = np.array(output_boxes).astype(int)
             bbox_file = '{}.txt'.format(base_results_path)
             np.savetxt(bbox_file, tracked_bb, delimiter='\t', fmt='%d')
-
 
     def get_parameters(self, run_id=None):
         """Get parameters."""

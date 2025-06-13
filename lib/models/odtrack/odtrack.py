@@ -222,5 +222,17 @@ def build_odtrack(cfg, training=True):
         checkpoint = torch.load(pretrained_file, map_location="cpu")
         missing_keys, unexpected_keys = model.load_state_dict(checkpoint["net"], strict=False)
         print('Load pretrained model from: ' + cfg.MODEL.PRETRAIN_FILE)
-    
+        if 0:
+            # 如果checkpoint是一个字典，可能包含了模型权重、优化器状态等
+            if isinstance(checkpoint, dict) and 'model_state_dict' in checkpoint:
+                model.load_state_dict(checkpoint['net'])
+                print("从checkpoint中加载模型权重")
+            else:
+                # 直接加载模型权重
+                model.load_state_dict(checkpoint['net'])
+                print("直接加载模型权重")
+
+            # 只保存模型参数
+            torch.save(model.state_dict(), '/home/xyl/newdrive/xyl-code2/0.my_trackers/FMTrack/output/ODTrack_ep0014.pth.tar')
+            print(f"模型权重已保存到 {'/home/xyl/newdrive/xyl-code2/0.my_trackers/FMTrack/output'}")
     return model

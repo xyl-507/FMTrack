@@ -45,33 +45,20 @@ lib/test/evaluation/local.py  # paths about testing
 ```
 ## Data Preparation
 Training datasets download
-- LaSOT: [[Link]](http://vision.cs.stonybrook.edu/~lasot/)
-- GOT-10k: : [[Link]](http://got-10k.aitestunion.com/)
-- COCO: : [[Link]](https://cocodataset.org/#home)
-- TrackingNet: : [[Link]](https://github.com/SilvioGiancola/TrackingNet-devkit)
+- LasHeR: [[Link]](https://github.com/BUGPLEASEOUT/LasHeR)
+- VTUAV-ST: : [[Link]](https://github.com/zhang-pengyu/DUT-VTUAV)
 
 Put the tracking datasets in ./data. It should look like this:
    ```
    ${PROJECT_ROOT}
     -- data
-        -- lasot
-            |-- airplane
-            |-- basketball
-            |-- bear
-            ...
-        -- got10k
+        -- LasHeR
             |-- test
             |-- train
-            |-- val
-        -- coco
-            |-- annotations
-            |-- images
-        -- trackingnet
-            |-- TRAIN_0
-            |-- TRAIN_1
             ...
-            |-- TRAIN_11
-            |-- TEST
+        -- VTUAV-ST
+            |-- test
+            |-- train
    ```
 
 ## Training

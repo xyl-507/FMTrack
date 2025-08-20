@@ -3,12 +3,12 @@
 This is an official pytorch implementation of the 2025 IEEE Transactions on Circuits and Systems for Video Technology paper:
 ```
 FMTrack: Frequency-aware Interaction and Multi-Expert Fusion for RGB-T Tracking
-(accepted by IEEE Transactions on Circuits and Systems for Video Technology, DOI: xxx)
+(accepted by IEEE Transactions on Circuits and Systems for Video Technology, DOI: 10.1109/TCSVT.2025.3601598)
 ```
 
 ![image](https://github.com/xyl-507/FMTrack/blob/main/figs/FMTrack.jpg)
 
-The paper can be downloaded from [IEEE Xplore] and [ResearchGate]
+The paper can be downloaded from [IEEE Xplore](https://doi.org/10.1109/TCSVT.2025.3601598) and [ResearchGate]
 
 The models and raw results can be downloaded from [**[BaiduYun]**](https://pan.baidu.com/s/1pWnuFUtYeuhkWZ7XHfybNQ?pwd=x2w9) and [**[GitHub]**](https://github.com/xyl-507/FMTrack/releases/tag/Results).
 
@@ -108,7 +108,7 @@ If you find this work useful for your research, please cite the following papers
   journal={IEEE Transactions on Circuits and Systems for Video Technology}, 
   title={FMTrack: Frequency-aware Interaction and Multi-Expert Fusion for RGB-T Tracking}, 
   year={2025},
-  doi={xxx}}
+  doi={10.1109/TCSVT.2025.3601598}}
 ```
 If you have any questions about this work, please contact with me via *xyl_507@outlook.com*
 

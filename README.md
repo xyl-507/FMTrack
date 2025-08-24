@@ -8,7 +8,7 @@ FMTrack: Frequency-aware Interaction and Multi-Expert Fusion for RGB-T Tracking
 
 ![image](https://github.com/xyl-507/FMTrack/blob/main/figs/FMTrack.jpg)
 
-The paper can be downloaded from [IEEE Xplore](https://doi.org/10.1109/TCSVT.2025.3601598) and [ResearchGate]
+The paper can be downloaded from [IEEE Xplore](https://ieeexplore.ieee.org/document/11134499) and [ResearchGate]
 
 The models and raw results can be downloaded from [**[BaiduYun]**](https://pan.baidu.com/s/1pWnuFUtYeuhkWZ7XHfybNQ?pwd=x2w9) and [**[GitHub]**](https://github.com/xyl-507/FMTrack/releases/tag/Results).
 

@@ -63,7 +63,7 @@ Put the tracking datasets in ./data. It should look like this:
 
 ## Training
 - Download pre-trained [[MAE ViT-Base weights]](https://dl.fbaipublicfiles.com/mae/pretrain/mae_pretrain_vit_base.pth) and put it to `$PROJECT_ROOT$/FMTrack/lib/models/pretrained_models`.
-- Download RGB Tracker pre-trained weights [[ODTrack]](https://github.com/GXNU-ZhongLab/ODTrack) and put it to `$PROJECT_ROOT$/FMTrack/lib/models/pretrained_models`.
+- Download RGB Tracker pre-trained weights [[ODTrack]](https://github.com/GXNU-ZhongLab/ODTrack), put it to `$PROJECT_ROOT$/FMTrack/lib/models/pretrained_models`, and rename 'ODTrack_256_ep0300.pth.tar' to 'ODTrack_256_Pretrained.pth.tar'.
 
 1.Training with one GPU.
 ```
